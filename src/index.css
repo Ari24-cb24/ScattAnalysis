@@ -1,0 +1,94 @@
+:root {
+  --clr-background: #121316;
+  --clr-background-contrast: #2D2F37;
+  --clr-background-dark-contrast: #242832;
+  --clr-background-light-contrast: #494F5F;
+  --clr-text: #FFFFFF;
+  --clr-accent: #4E93F5;
+
+  --fs-extra-small: 11.1px;
+  --fs-small: 13.3px;
+  --fs-p: 16px;
+  --fs-h6: 20px;
+  --fs-h5: 25px;
+  --fs-h4: 31.25px;
+  --fs-h3: 39.06px;
+  --fs-h2: 48.83px;
+  --fs-h1: 61.04px;
+}
+
+body {
+  font-family: "Open Sans", Inter, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--clr-background);
+  color: var(--clr-text);
+}
+
+
+* {
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+}
+
+
+h6,h5,h4,h3,h2,h1,small,p {
+  margin: 0;
+  line-height: 1.2;
+}
+
+small {
+  font-size: var(--fs-small);
+}
+
+h6 {
+  font-size: var(--fs-h6);
+}
+
+h5 {
+  font-size: var(--fs-h5);
+}
+
+h4 {
+  font-size: var(--fs-h4);
+}
+
+h3 {
+  font-size: var(--fs-h3);
+}
+
+h2 {
+  font-size: var(--fs-h2);
+}
+
+h1 {
+  font-size: var(--fs-h1);
+}
+
+p {
+  font-size: var(--fs-p);
+}
+
+
+
+
+
+
+
+button:focus {
+  outline: none;
+}
+
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}

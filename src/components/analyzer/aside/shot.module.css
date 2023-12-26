@@ -1,0 +1,37 @@
+.wrapper {
+    margin-bottom: 5px;
+}
+
+.shot {
+    background-color: rgba(73, 79, 95, 0.5);
+    padding: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    grid-gap: 8px;
+    cursor: pointer;
+}
+
+.shot:hover {
+    background-color: rgba(73, 79, 95, 0.8);
+}
+
+.subgroup {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.details {
+    background-color: var(--clr-background-light-contrast);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    padding: 10px;
+    row-gap: 10px;
+}
+
+.smol {
+    font-size: var(--fs-extra-small);
+}

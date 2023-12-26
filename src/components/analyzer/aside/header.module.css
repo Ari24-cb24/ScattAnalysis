@@ -1,0 +1,26 @@
+.header {
+    background-color: var(--clr-background-light-contrast);
+    padding: 1rem;
+    width: 100%;
+    box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.5);
+}
+
+.separator {
+    height: 1px;
+    width: 100%;
+    background-color: var(--clr-text);
+    margin-bottom: 1rem;
+}
+
+.group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.subgroup {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
