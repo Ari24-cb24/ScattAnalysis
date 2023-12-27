@@ -21,6 +21,8 @@ const loadMeta = () => {
 
     for (let i = 0; i < shotCount; i++) {
         const shotExtra: IShotExtra = {
+            rings: Math.floor(shots[i].result),
+            ringsFraction: shots[i].result,
             durationMillis: getShotDuration(shots[i]) * 1000,
             aveSpeed: 0,
             aveSpeed250ms: 0,

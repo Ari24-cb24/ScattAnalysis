@@ -1,3 +1,9 @@
+
+export const formatMillisToMin = (millis: number) => {
+    const minutes = Math.floor(millis / 60000);
+    return `${minutes}`;
+}
+
 export const formatMillisToMinSec = (millis: number) => {
     const minutes = Math.floor(millis / 60000);
     const seconds = ((millis % 60000) / 1000).toFixed(0);
