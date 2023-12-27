@@ -1,5 +1,5 @@
 import styles from "./shotcanvascontrols.module.css";
-import {IconPlayerPause, IconPlayerPauseFilled, IconPlayerPlayFilled} from "@tabler/icons-react";
+import {IconPlayerPauseFilled, IconPlayerPlayFilled} from "@tabler/icons-react";
 import {useAnalyzerStore} from "../../../stores/analyzerstore.ts";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {formatMillisToMinSec, formatMillisToMinSecMillis} from "../../../utills/jsutils.ts";

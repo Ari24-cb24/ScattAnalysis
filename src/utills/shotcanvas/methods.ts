@@ -40,6 +40,19 @@ export const getMaxFrames = (shot: IScattShot): number => {
     return Math.floor(totalMillis * FPS)
 }
 
+const getShotTraceIdx = (shot: IScattShot) => {
+    let shotTraceIdx = -1;
+
+    for (let i = 0; i < shot.trace.length; i++) {
+        if (shot.trace[i].t >= 0) {
+            shotTraceIdx = i;
+            break;
+        }
+    }
+
+    return shotTraceIdx;
+}
+
 const drawTraces = (ctx: CanvasRenderingContext2D, traces: Array<ITrace>, width: number, height: number) => {
     ctx.strokeStyle = "#00FF00";
     ctx.lineWidth = 5;
@@ -82,35 +95,31 @@ const drawShot = (ctx: CanvasRenderingContext2D, shot: IScattShot, width: number
     ctx.globalCompositeOperation = "source-over";
 }
 
-export const redrawAllFrames = (ctx: CanvasRenderingContext2D, trace: Array<ITrace>, width: number, height: number, frame: number) => {
-    const shotStart = trace[0].t;
+export const redrawAllFrames = (ctx: CanvasRenderingContext2D, shot: IScattShot, width: number, height: number, frame: number, isGoingBackwards: boolean) => {
+    if (isGoingBackwards) {
+        ctx.clearRect(0, 0, width, height);
+    }
+
+    const shotStart = shot.trace[0].t;
     const elapsedMillis = frame * TIME_PER_FRAME;
     const traces = [];
+    const shotTraceIdx = getShotTraceIdx(shot);
 
-    for (let i = 0; i < trace.length; i++) {
-        const absTime = absoluteTime(shotStart, trace[i].t) * 1000;
+    for (let i = 0; i < shot.trace.length; i++) {
+        const absTime = absoluteTime(shotStart, shot.trace[i].t) * 1000;
+
+        if (i === shotTraceIdx) {
+            drawShot(ctx, shot, width, height);
+        }
 
         if (absTime <= elapsedMillis) {
-            traces.push(trace[i]);
+            traces.push(shot.trace[i]);
         } else {
             break;
         }
     }
 
     drawTraces(ctx, traces, width, height);
-}
-
-const getShotTraceIdx = (shot: IScattShot) => {
-    let shotTraceIdx = -1;
-
-    for (let i = 0; i < shot.trace.length; i++) {
-        if (shot.trace[i].t >= 0) {
-            shotTraceIdx = i;
-            break;
-        }
-    }
-
-    return shotTraceIdx;
 }
 
 export const drawFrame = (ctx: CanvasRenderingContext2D, shot: IScattShot, width: number, height: number, frame: number) => {

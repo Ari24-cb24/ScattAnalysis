@@ -17,7 +17,7 @@ interface AnalyzerData {
 }
 
 export const useAnalyzerStore = create<AnalyzerData>((set) => ({
-    currentShotIdx: 0,
+    currentShotIdx: -1,
     currentShot: null,
     shotExtras: [],
     replayPercentage: 0,

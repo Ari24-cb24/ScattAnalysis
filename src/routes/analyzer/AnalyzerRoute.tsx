@@ -54,7 +54,7 @@ const AnalyzerRoute = () => {
         <div className={styles.wrapper}>
             <Aside meta={meta} shots={shots} onSelectShot={(shot: IScattShot) => setCurrentShot(shot)} />
             <div className={styles.main__wrapper}>
-                {currentShot && (
+                {currentShot !== null && (
                     <>
                         <ShotCanvas />
                         <ShotCanvasControls />
