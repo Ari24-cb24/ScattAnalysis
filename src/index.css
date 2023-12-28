@@ -79,12 +79,6 @@ p {
   font-size: var(--fs-p);
 }
 
-
-
-
-
-
-
 button:focus {
   outline: none;
 }

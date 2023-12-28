@@ -48,6 +48,8 @@ const request_file_dialog = (event) => {
     const meta = {...data};
     delete meta.shots;
 
+    console.log("Starting tile request")
+
     event.reply("new-workspace", {
         type: "start-tile-request",
         length: data.shots.length,
@@ -76,8 +78,10 @@ const load_new_workspace_handler = () => {
         switch (args.type) {
             case "request-file-dialog":
                 request_file_dialog(event);
+                break;
             case "tile-request":
                 respond_to_tile_request(event);
+                break;
         }
     })
 }

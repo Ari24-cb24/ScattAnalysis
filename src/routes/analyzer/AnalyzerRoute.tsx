@@ -1,69 +1,81 @@
 import styles from "./analyzerroute.module.css"
 import Aside from "../../components/analyzer/aside/Aside.tsx";
 import {IScattDocumentMeta, IScattShot} from "../../types/analyzer/scatt_document_types.ts";
-import {useEffect, useMemo, useState} from "react";
+import React, {useEffect, useMemo} from "react";
 import ShotCanvas from "../../components/analyzer/main/ShotCanvas.tsx";
 import ShotCanvasControls from "../../components/analyzer/controls/ShotCanvasControls.tsx";
-import {IShotExtra} from "../../types/scattshotextras.ts";
-import {getShotDuration} from "../../utills/shotcanvas/methods.ts";
 import {useAnalyzerStore} from "../../stores/analyzerstore.ts";
+import {createTilePanes, TileBranchSubstance, TileContainer, TileProvider} from "react-tile-pane";
+import {theme} from "./container-theme/theme.tsx";
+import {IconLayoutSidebar, IconPlayerSkipForwardFilled, IconTarget} from "@tabler/icons-react";
 
 const loadMeta = () => {
     const meta: IScattDocumentMeta = JSON.parse(localStorage.getItem("shot-meta")!);
-    const shotCount = parseInt(localStorage.getItem("shot-count")!);
-    const shots: Array<IScattShot> = [];
-
-    for (let i = 0; i < shotCount; i++) {
-        shots.push(JSON.parse(localStorage.getItem("shot-" + i)!));
-    }
-
-    const shotExtras: Array<IShotExtra> = [];
-
-    for (let i = 0; i < shotCount; i++) {
-        const shotExtra: IShotExtra = {
-            rings: Math.floor(shots[i].result),
-            ringsFraction: shots[i].result,
-            durationMillis: getShotDuration(shots[i]) * 1000,
-            aveSpeed: 0,
-            aveSpeed250ms: 0,
-            bestResultBefore: {
-                deltaTime: 0,
-                absTime: 0,
-                result: 0,
-            }
-        }
-
-        shotExtras.push(shotExtra);
-    }
+    const shots: Array<IScattShot> = JSON.parse(localStorage.getItem("shot-list")!);
 
     return {
         meta,
         shots,
-        shotExtras,
     }
 }
 
+const [paneList, names] = createTilePanes({
+    aside: <Aside />,
+    shotReplay: <ShotCanvas />,
+    replayControls: <ShotCanvasControls />
+});
+
+const icons: Record<keyof typeof names, React.ReactNode> = {
+    aside: <IconLayoutSidebar />,
+    shotReplay: <IconTarget />,
+    replayControls: <IconPlayerSkipForwardFilled />,
+}
+
+const windowNames: Record<keyof typeof names, string> = {
+    aside: "Overview",
+    shotReplay: "Shot Replay",
+    replayControls: "Replay Controls",
+}
+
+const rootPane: TileBranchSubstance = {
+    isRow: true,
+    children: [
+        {
+            children: names.aside,
+            grow: 1,
+        },
+        {
+            children: [
+                {
+                    children: names.shotReplay,
+                    grow: 8,
+                },
+                {
+                    children: names.replayControls,
+                    grow: 2,
+                }
+            ],
+            grow: 3,
+        },
+    ],
+}
+
 const AnalyzerRoute = () => {
-    const {meta, shots, shotExtras} = useMemo(loadMeta, []);
-    const [currentShot, setCurrentShot] = useState<IScattShot | null>(shots ? shots[0] : null);
-    const [setShotExtras] = useAnalyzerStore((state) => [state.setShotExtras]);
+    const {meta, shots} = useMemo(loadMeta, []);
+    const [setShots, setMeta] = useAnalyzerStore((state) =>
+        [state.setShots, state.setMeta]);
 
     useEffect(() => {
-        setShotExtras(shotExtras);
-    }, [setShotExtras, shotExtras]);
+        setShots(shots);
+        setMeta(meta);
+    }, [setShots, setMeta, shots, meta]);
 
     return (
-        <div className={styles.wrapper}>
-            <Aside meta={meta} shots={shots} onSelectShot={(shot: IScattShot) => setCurrentShot(shot)} />
-            <div className={styles.main__wrapper}>
-                {currentShot !== null && (
-                    <>
-                        <ShotCanvas />
-                        <ShotCanvasControls />
-                    </>
-                )}
+        <TileProvider rootNode={rootPane} tilePanes={paneList} {...theme(icons, windowNames)}>
+            <div className={styles.wrapper}>
+                <TileContainer />
             </div>
-        </div>
+        </TileProvider>
     )
 }
 

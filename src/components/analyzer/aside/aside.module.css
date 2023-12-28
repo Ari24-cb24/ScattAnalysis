@@ -1,9 +1,9 @@
 .aside {
     display: flex;
     flex-direction: column;
-    width: 400px;
     height: 100vh;
     background-color: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
 }
 
 .shots {

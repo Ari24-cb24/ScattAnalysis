@@ -1,35 +1,34 @@
-import {IScattDocumentMeta} from "../../../types/analyzer/scatt_document_types.ts";
+import {IScattDocumentMeta, IScattShot} from "../../../types/analyzer/scatt_document_types.ts";
 import styles from "./header.module.css"
 import {IconCalendarMonth, IconCircle, IconClock, IconViewfinder} from "@tabler/icons-react";
-import {IShotExtra} from "../../../types/scattshotextras.ts";
 import {useMemo} from "react";
 import {formatMillisToMinSec} from "../../../utills/jsutils.ts";
 
 const Header = (props: {
     meta: IScattDocumentMeta;
-    shotExtras: Array<IShotExtra>;
+    shots: Array<IScattShot>;
 }) => {
     const totalTimeFormatted = useMemo(() => {
         let total = 0;
 
-        props.shotExtras.forEach((shotExtra) => {
-            total += shotExtra.durationMillis;
+        props.shots.forEach((shot) => {
+            total += shot.duration_millis;
         })
 
         return formatMillisToMinSec(total);
-    }, [props.shotExtras]);
+    }, [props.shots]);
 
     const totalRings = useMemo(() => {
         let rings = 0;
         let fractionRings = 0;
 
-        props.shotExtras.forEach((extra) => {
-            fractionRings += extra.ringsFraction;
-            rings += extra.rings;
+        props.shots.forEach((shot) => {
+            fractionRings += shot.rings_fraction;
+            rings += shot.rings;
         })
 
         return [rings, fractionRings.toFixed(1)];
-    }, [props.shotExtras]);
+    }, [props.shots]);
 
     return (
         <div className={styles.header}>

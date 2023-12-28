@@ -2,13 +2,46 @@ import styles from "./homeroute.module.css"
 import {IconUser, IconFile, IconFolderFilled} from "@tabler/icons-react"
 import {Link, useNavigate} from "react-router-dom";
 import {useCallback, useEffect, useState} from "react";
+import {getShotDuration} from "../../utills/shotcanvas/methods.ts";
+import {ITrace} from "../../types/analyzer/scatt_document_types.ts";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { ipcRenderer } = require("electron");
 
 interface IpcMainEvent {}
 
+const modifyShot = (shot: any, trace: Array<ITrace>) => {
+    shot = {
+        ...shot,
+        rings: Math.floor(shot.result),
+        rings_fraction: shot.result,
+        duration_millis: getShotDuration(trace) * 1000,
+        ave_speed: 0,
+        ave_speed_250ms: 0,
+        best_result_before: {
+            delta_time: 0,
+            abs_time: 0,
+            result: 0,
+        }
+    };
+    return shot;
+}
+
 const saveShotToLocalStorage = (shot: any) => {
-    localStorage.setItem("shot-" + shot.idx, JSON.stringify(shot.data));
+    const trace = shot.data.trace;
+    localStorage.setItem("shot-trace-" + shot.idx, JSON.stringify(trace))
+
+    let shotData = {...shot.data};
+    delete shotData.trace;
+
+    while (localStorage.getItem("shot-list") === null) {
+        console.log("Waiting for shot-list to be initialized");
+    }
+
+    shotData = modifyShot(shotData, trace);
+
+    const shotList = JSON.parse(localStorage.getItem("shot-list")!);
+    shotList[shot.idx] = shotData;
+    localStorage.setItem("shot-list", JSON.stringify(shotList));
 }
 
 const HomeRoute = () => {
@@ -19,13 +52,13 @@ const HomeRoute = () => {
         // Clear localstorage
         localStorage.clear();
 
-        ipcRenderer.on("new-workspace", (event: IpcMainEvent, args) => {
+        ipcRenderer.on("new-workspace", (_event: IpcMainEvent, args: any) => {
            switch (args.type) {
                case "start-tile-request":
                    console.log("Starting tile request");
                    setLoading(true);
 
-                   localStorage.setItem("shot-count", args.length);
+                   localStorage.setItem("shot-list", JSON.stringify(Array(args.length).fill(null)));
                    localStorage.setItem("shot-meta", JSON.stringify(args.meta));
 
                    ipcRenderer.send("new-workspace", {
@@ -42,13 +75,16 @@ const HomeRoute = () => {
                    break;
                case "end-tile-request":
                    console.log("Ending tile request");
-                   setLoading(false);
-                   navigate("/analyzer");
+
+                   setTimeout(() => {
+                       setLoading(false);
+                       navigate("/analyzer");
+                   }, 1000);
                    break;
            }
         });
     }, []);
-    
+
     const openFileDialog = useCallback(() => {
         ipcRenderer.send("new-workspace", {
             "type": "request-file-dialog"

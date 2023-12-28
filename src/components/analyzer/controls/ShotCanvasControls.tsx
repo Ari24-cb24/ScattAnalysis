@@ -1,40 +1,21 @@
 import styles from "./shotcanvascontrols.module.css";
 import {IconPlayerPauseFilled, IconPlayerPlayFilled} from "@tabler/icons-react";
-import {useAnalyzerStore} from "../../../stores/analyzerstore.ts";
+import {useReplayStore} from "../../../stores/analyzerstore.ts";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {formatMillisToMinSec, formatMillisToMinSecMillis} from "../../../utills/jsutils.ts";
+import {useCurrentShot} from "../../../hooks/useCurrentShot.ts";
 
 const ShotCanvasControls = () => {
-    const [currentShot,
-        currentShotIdx,
-        shotExtras,
-        percentage,
-        isReplayPlaying,
-        setPercentage,
-        setReplayPlaying
-    ] = useAnalyzerStore((state) => [state.currentShot,
-        state.currentShotIdx,
-        state.shotExtras,
-        state.replayPercentage,
-        state.isReplayPlaying,
-        state.setReplayPercentage,
-        state.setReplayPlaying
-    ]);
-    const shotExtra = useMemo(() => shotExtras ? shotExtras[currentShotIdx] : null, [currentShotIdx, shotExtras]);
-    const maxTimeFormatted = useMemo(() => shotExtra ? formatMillisToMinSec(shotExtra.durationMillis) : null, [shotExtra]);
+    const [replayPercentage, isReplayPlaying, setReplayPlaying, setReplayPercentage] = useReplayStore((state) =>
+        [state.replayPercentage, state.isReplayPlaying, state.setReplayPlaying, state.setReplayPercentage]);
 
-    const [currentTimeFormatted, setCurrentTimeFormatted] = useState(formatMillisToMinSecMillis(0));
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [shot, _trace] = useCurrentShot();
+    const maxTimeFormatted = useMemo(() => shot ? formatMillisToMinSec(shot.duration_millis) : null, [shot]);
+    const currentTimeFormatted = useMemo(() =>
+        formatMillisToMinSecMillis(shot ? (shot.duration_millis * replayPercentage / 100) : 0), [replayPercentage, shot]);
 
-    useEffect(() => {
-        setCurrentTimeFormatted(formatMillisToMinSecMillis(shotExtra ? shotExtra.durationMillis * percentage / 100 : 0));
-    }, [percentage, shotExtra]);
-
-    useEffect(() => {
-        setReplayPlaying(false);
-        setPercentage(0);
-    }, [currentShotIdx, setPercentage, setReplayPlaying]);
-
-    if (currentShot === null || shotExtra === null) return null;
+    if (!shot) return null;
 
     return (
         <footer className={styles.wrapper}>
@@ -47,7 +28,11 @@ const ShotCanvasControls = () => {
                     )}
                     <p className={styles.playback_time}>{currentTimeFormatted[0]}<span className={styles.playback_time__millis}>:{currentTimeFormatted[1]}</span></p>
                 </div>
-                <ProgressBar percentage={percentage} setPercentage={setPercentage} />
+                <ProgressBar
+                    percentage={replayPercentage}
+                    setPercentage={setReplayPercentage}
+                    setReplayPlaying={setReplayPlaying}
+                />
                 <p className={styles.max_time}>{maxTimeFormatted}</p>
             </div>
             <div className={styles.separator} />
@@ -59,17 +44,18 @@ const ShotCanvasControls = () => {
 const ProgressBar = (props: {
     percentage: number;
     setPercentage: (percentage: number) => void;
+    setReplayPlaying: (isPlaying: boolean) => void;
 }) => {
     const [isDragging, setDragging] = useState(false);
-    const [setReplayPlaying] = useAnalyzerStore((state) => [state.setReplayPlaying]);
     const barRef = useRef<HTMLDivElement>(null);
     const handleRef = useRef<HTMLDivElement>(null);
 
     const onMouseDown = () => {
-        setReplayPlaying(false);
+        props.setReplayPlaying(false);
         setDragging(true);
     }
 
+    // Update the handle position when the percentage changes
     useEffect(() => {
         if (barRef.current && handleRef.current) {
             const barRect = barRef.current.getBoundingClientRect();
@@ -87,6 +73,7 @@ const ProgressBar = (props: {
             const handleLeft = event.clientX - barRect.left;
             const handleRight = barRect.right - event.clientX;
 
+            // Account for the width of the handle
             if (handleLeft >= 0 && handleRight >= 0) {
                 handleRef.current.style.left = handleLeft - handleRect.width / 2 + "px";
             }
@@ -101,7 +88,7 @@ const ProgressBar = (props: {
 
             props.setPercentage(Math.max(0, Math.min(100, handleLeft / barRect.width * 100)));
         }
-    }, [isDragging]);
+    }, [isDragging, props.setPercentage]);
 
     const onMouseUp = () => {
         setDragging(false);

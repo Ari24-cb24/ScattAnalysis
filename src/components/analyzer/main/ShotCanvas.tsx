@@ -1,68 +1,59 @@
 import {useEffect, useMemo, useRef, useState} from "react";
 import {
     drawFrame,
-    FPS,
     getMaxFrames,
     redrawAllFrames,
     resetCanvas,
     TIME_PER_FRAME
 } from "../../../utills/shotcanvas/methods.ts";
-import {useAnalyzerStore} from "../../../stores/analyzerstore.ts";
+import {useAnalyzerStore, useReplayStore} from "../../../stores/analyzerstore.ts";
 import styles from "./shotcanvas.module.css"
+import {useCurrentShot} from "../../../hooks/useCurrentShot.ts";
 
 const ShotCanvas = () => {
-    const ref = useRef<HTMLCanvasElement>(null);
-    const [
-        currentShot,
-        currentShotIdx,
-        shotExtras,
-        isReplayPlaying,
-        percentage,
-        setPercentage,
-    ] = useAnalyzerStore((state) => [
-        state.currentShot,
-        state.currentShotIdx,
-        state.shotExtras,
-        state.isReplayPlaying,
-        state.replayPercentage,
-        state.setReplayPercentage,
-    ]);
-    const [frameIdx, setFrameIdx] = useState(0);
-    const MAX_FRAMES = useMemo(() => currentShot ? getMaxFrames(currentShot) : -1, [currentShot]);
+    const [replayPercentage, isReplayPlaying, setReplayPercentage] = useReplayStore((state) => [
+        state.replayPercentage, state.isReplayPlaying, state.setReplayPercentage]);
+    const [currentShotIdx] = useAnalyzerStore((state) =>
+        [state.currentShotIdx]);
+    const [currentShot, trace] = useCurrentShot();
+
     const interval = useRef<NodeJS.Timeout | null>(null);
     const ctx = useRef<CanvasRenderingContext2D | null>(null);
-    const oldPercentageRef = useRef<number>(percentage);
+    const ref = useRef<HTMLCanvasElement>(null);
 
+    const oldPercentageRef = useRef<number>(replayPercentage);
+    const [frameIdx, setFrameIdx] = useState(0);
+    const MAX_FRAMES = useMemo(() => trace ? getMaxFrames(trace) : -1, [trace]);
+
+    // Reset the canvas whenever the current shot changes
     useEffect(() => {
-        if (!ref.current || !currentShot) return;
+        if (!ref.current || currentShotIdx === -1) return;
         setFrameIdx(0);
         ctx.current = ref.current.getContext("2d");
 
         if (ctx.current === null) return;
         resetCanvas(ctx.current, ref.current.width, ref.current.height);
-    }, [currentShot]);
+    }, [currentShotIdx]);
 
+    // Draw the current frame when autoplaying is active
     useEffect(() => {
         if (ref.current === null || ctx.current === null || currentShot === null || !isReplayPlaying) return;
-        drawFrame(ctx.current, currentShot, ref.current.width, ref.current.height, frameIdx);
-    }, [currentShot, frameIdx]);
+        drawFrame(ctx.current, currentShot, trace, ref.current.width, ref.current.height, frameIdx);
+    }, [currentShot, trace, frameIdx, isReplayPlaying]);
 
+    // Draw the current frame when the user is dragging the slider
     useEffect(() => {
         if (ref.current === null || ctx.current === null || currentShot === null) return;
-        // convert percentage to frame index
-        const isGoingBackwards = oldPercentageRef.current > percentage;
-        oldPercentageRef.current = percentage;
+        const isGoingBackwards = oldPercentageRef.current > replayPercentage;
+        oldPercentageRef.current = replayPercentage;
 
-        const frameIdx = Math.floor(percentage / 100 * MAX_FRAMES);
-        setFrameIdx(frameIdx);
-        redrawAllFrames(ctx.current, currentShot, ref.current.width, ref.current.height, frameIdx, isGoingBackwards);
-    }, [percentage, currentShot]);
+        const frameIdx = Math.floor(replayPercentage / 100 * MAX_FRAMES);
+        redrawAllFrames(ctx.current, currentShot, trace, ref.current.width, ref.current.height, frameIdx, isGoingBackwards);
+    }, [replayPercentage, currentShot, MAX_FRAMES, trace]);
 
+    // Autoplay the replay
     useEffect(() => {
-        if (!isReplayPlaying) {
-            if (interval.current !== null) clearInterval(interval.current);
-            return;
-        }
+        if (currentShot === null || !isReplayPlaying) return;
         if (interval.current !== null) clearInterval(interval.current);
 
         interval.current = setInterval(() => {
@@ -71,13 +62,14 @@ const ShotCanvas = () => {
                 return;
             }
 
+            // Recalculating the percentage
             const milliseconds = (frameIdx + 1) * TIME_PER_FRAME;
-            const percentage = milliseconds / shotExtras[currentShotIdx].durationMillis * 100;
-            setPercentage(percentage);
+            const percentage = milliseconds / currentShot.duration_millis * 100;
+            setReplayPercentage(percentage);
 
             setFrameIdx((prev) => prev + 1);
         }, TIME_PER_FRAME);
-    }, [MAX_FRAMES, currentShot, currentShotIdx, frameIdx, isReplayPlaying, setPercentage, shotExtras]);
+    }, [MAX_FRAMES, currentShot, frameIdx, isReplayPlaying, setReplayPercentage]);
 
     return (
         <div className={styles.wrapper}>

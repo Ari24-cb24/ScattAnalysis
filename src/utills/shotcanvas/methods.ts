@@ -26,25 +26,25 @@ export const absoluteTime = (shotTime: number, tRelative: number): number => {
     }
 }
 
-export const getShotDuration = (shot: IScattShot): number => {
-    if (shot.trace.length === 0) return 0;
-    return Math.abs(shot.trace[shot.trace.length - 1].t) + Math.abs(shot.trace[0].t);
+export const getShotDuration = (trace: Array<ITrace>): number => {
+    if (trace.length === 0) return 0;
+    return Math.abs(trace[trace.length - 1].t) + Math.abs(trace[0].t);
 }
 
 export const resetCanvas = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
     ctx.clearRect(0, 0, width, height);
 }
 
-export const getMaxFrames = (shot: IScattShot): number => {
-    const totalMillis = getShotDuration(shot);
+export const getMaxFrames = (trace: Array<ITrace>): number => {
+    const totalMillis = getShotDuration(trace);
     return Math.floor(totalMillis * FPS)
 }
 
-const getShotTraceIdx = (shot: IScattShot) => {
+const getShotTraceIdx = (trace: Array<ITrace>) => {
     let shotTraceIdx = -1;
 
-    for (let i = 0; i < shot.trace.length; i++) {
-        if (shot.trace[i].t >= 0) {
+    for (let i = 0; i < trace.length; i++) {
+        if (trace[i].t >= 0) {
             shotTraceIdx = i;
             break;
         }
@@ -95,25 +95,25 @@ const drawShot = (ctx: CanvasRenderingContext2D, shot: IScattShot, width: number
     ctx.globalCompositeOperation = "source-over";
 }
 
-export const redrawAllFrames = (ctx: CanvasRenderingContext2D, shot: IScattShot, width: number, height: number, frame: number, isGoingBackwards: boolean) => {
+export const redrawAllFrames = (ctx: CanvasRenderingContext2D, shot: IScattShot, trace: Array<ITrace>, width: number, height: number, frame: number, isGoingBackwards: boolean) => {
     if (isGoingBackwards) {
         ctx.clearRect(0, 0, width, height);
     }
 
-    const shotStart = shot.trace[0].t;
+    const shotStart = trace[0].t;
     const elapsedMillis = frame * TIME_PER_FRAME;
     const traces = [];
-    const shotTraceIdx = getShotTraceIdx(shot);
+    const shotTraceIdx = getShotTraceIdx(trace);
 
-    for (let i = 0; i < shot.trace.length; i++) {
-        const absTime = absoluteTime(shotStart, shot.trace[i].t) * 1000;
+    for (let i = 0; i < trace.length; i++) {
+        const absTime = absoluteTime(shotStart, trace[i].t) * 1000;
 
         if (i === shotTraceIdx) {
             drawShot(ctx, shot, width, height);
         }
 
         if (absTime <= elapsedMillis) {
-            traces.push(shot.trace[i]);
+            traces.push(trace[i]);
         } else {
             break;
         }
@@ -122,24 +122,24 @@ export const redrawAllFrames = (ctx: CanvasRenderingContext2D, shot: IScattShot,
     drawTraces(ctx, traces, width, height);
 }
 
-export const drawFrame = (ctx: CanvasRenderingContext2D, shot: IScattShot, width: number, height: number, frame: number) => {
-    const shotStart = shot.trace[0].t;
+export const drawFrame = (ctx: CanvasRenderingContext2D, shot: IScattShot, trace: Array<ITrace>, width: number, height: number, frame: number) => {
+    const shotStart = trace[0].t;
     const elapsedMillis = frame * TIME_PER_FRAME;
     const prevElapsedMillis = (frame - 1) * TIME_PER_FRAME;
-    const shotTraceIdx = getShotTraceIdx(shot);
+    const shotTraceIdx = getShotTraceIdx(trace);
 
     const traces = [];
     let lastTraceIndex = -1;
 
-    for (let i = 0; i < shot.trace.length; i++) {
-        const absTime = absoluteTime(shotStart, shot.trace[i].t) * 1000;
+    for (let i = 0; i < trace.length; i++) {
+        const absTime = absoluteTime(shotStart, trace[i].t) * 1000;
 
         if (absTime >= elapsedMillis) {
-            traces.push(shot.trace[i]);
+            traces.push(trace[i]);
             lastTraceIndex = i;
             break;
         } else if (absTime >= prevElapsedMillis) {
-            traces.push(shot.trace[i]);
+            traces.push(trace[i]);
         }
     }
 

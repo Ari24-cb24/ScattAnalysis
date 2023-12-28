@@ -1,0 +1,67 @@
+.tab_bar {
+    position: absolute;
+    z-index: 999999999999999;
+    inset: 0;
+    width: 100%;
+    height: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.tab_bar:hover {
+    opacity: 1;
+}
+
+.tab_wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    width: 100%;
+    user-select: none;
+}
+
+.tab_wrapper > * {
+    display: grid;
+    place-items: center;
+}
+
+.tab_wrapper.active {
+    background: rgba(0, 0, 0, 1);
+}
+
+.identifier {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.stretch_bar {
+    --_size: 5px;
+    position: relative;
+    cursor: ew-resize;
+    width: var(--_size);
+    height: var(--_size);
+}
+
+.stretch_bar::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #567091;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.stretch_bar:hover::after {
+    opacity: 1;
+    background: #567091;
+}
