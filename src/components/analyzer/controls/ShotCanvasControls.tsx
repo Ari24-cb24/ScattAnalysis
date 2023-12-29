@@ -86,8 +86,6 @@ const ProgressBar = (props: {
                 handleRef.current.style.left = barRect.width - handleRect.width / 2 + "px";
             }
 
-            console.log(Math.max(0, Math.min(100, handleLeft / barRect.width * 100)))
-
             props.setPercentage(Math.max(0, Math.min(100, handleLeft / barRect.width * 100)));
         }
     }, [isDragging, props]);
