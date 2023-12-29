@@ -26,9 +26,9 @@ const [paneList, names] = createTilePanes({
 });
 
 const icons: Record<keyof typeof names, React.ReactNode> = {
-    aside: <IconLayoutSidebar />,
-    shotReplay: <IconTarget />,
-    replayControls: <IconPlayerSkipForwardFilled />,
+    aside: <IconLayoutSidebar size={16} />,
+    shotReplay: <IconTarget size={16} />,
+    replayControls: <IconPlayerSkipForwardFilled size={16} />,
 }
 
 const windowNames: Record<keyof typeof names, string> = {

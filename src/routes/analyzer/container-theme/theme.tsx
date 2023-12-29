@@ -19,10 +19,10 @@ export const tabBarConfig: (
                     >
                         <div className={styles.identifier}>
                             {icons[tab]}
-                            <p className={styles.title}>{names[tab]}</p>
+                            <small className={styles.title}>{names[tab]}</small>
                         </div>
                         <div className={styles.close}>
-                            <IconX onClick={() => action.closeTab(idx)} />
+                            <IconX size={16} onClick={() => action.closeTab(idx)} />
                         </div>
                     </DraggableTitle>
                 ))}
