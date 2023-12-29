@@ -15,6 +15,14 @@ const ShotCanvasControls = () => {
     const currentTimeFormatted = useMemo(() =>
         formatMillisToMinSecMillis(shot ? (shot.duration_millis * replayPercentage / 100) : 0), [replayPercentage, shot]);
 
+    const toggleReplayPlaying = useCallback((value: boolean) => {
+        if (value && Math.ceil(replayPercentage) === 100) {
+            setReplayPercentage(0);
+        }
+
+        setReplayPlaying(value);
+    }, [replayPercentage, setReplayPercentage, setReplayPlaying]);
+
     if (!shot) return null;
 
     return (
@@ -22,9 +30,9 @@ const ShotCanvasControls = () => {
             <div className={styles.media_control}>
                 <div className={styles.media_control__play}>
                     {!isReplayPlaying ? (
-                        <IconPlayerPlayFilled className={styles.media_control__play_button} onClick={() => setReplayPlaying(true)} />
+                        <IconPlayerPlayFilled className={styles.media_control__play_button} onClick={() => toggleReplayPlaying(true)} />
                     ) : (
-                        <IconPlayerPauseFilled className={styles.media_control__play_button} onClick={() => setReplayPlaying(false)} />
+                        <IconPlayerPauseFilled className={styles.media_control__play_button} onClick={() => toggleReplayPlaying(false)} />
                     )}
                     <p className={styles.playback_time}>{currentTimeFormatted[0]}<span className={styles.playback_time__millis}>:{currentTimeFormatted[1]}</span></p>
                 </div>

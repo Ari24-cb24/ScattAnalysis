@@ -11,8 +11,8 @@ import styles from "./shotcanvas.module.css"
 import {useCurrentShot} from "../../../hooks/useCurrentShot.ts";
 
 const ShotCanvas = () => {
-    const [replayPercentage, isReplayPlaying, setReplayPercentage] = useReplayStore((state) => [
-        state.replayPercentage, state.isReplayPlaying, state.setReplayPercentage]);
+    const [replayPercentage, isReplayPlaying, setReplayPercentage, setIsReplayPlaying] = useReplayStore((state) => [
+        state.replayPercentage, state.isReplayPlaying, state.setReplayPercentage, state.setReplayPlaying]);
     const [currentShotIdx] = useAnalyzerStore((state) =>
         [state.currentShotIdx]);
     const [currentShot, trace] = useCurrentShot();
@@ -59,6 +59,7 @@ const ShotCanvas = () => {
 
         interval.current = setInterval(() => {
             if (frameIdx >= MAX_FRAMES) {
+                setIsReplayPlaying(false);
                 clearInterval(interval.current!);
                 return;
             }
