@@ -48,13 +48,14 @@ const ShotCanvas = () => {
         oldPercentageRef.current = replayPercentage;
 
         const frameIdx = Math.floor(replayPercentage / 100 * MAX_FRAMES);
+        setFrameIdx(frameIdx);
         redrawAllFrames(ctx.current, currentShot, trace, ref.current.width, ref.current.height, frameIdx, isGoingBackwards);
     }, [replayPercentage, currentShot, MAX_FRAMES, trace]);
 
     // Autoplay the replay
     useEffect(() => {
-        if (currentShot === null || !isReplayPlaying) return;
         if (interval.current !== null) clearInterval(interval.current);
+        if (currentShot === null || !isReplayPlaying) return;
 
         interval.current = setInterval(() => {
             if (frameIdx >= MAX_FRAMES) {
