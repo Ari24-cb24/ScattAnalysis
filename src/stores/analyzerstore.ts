@@ -16,10 +16,12 @@ interface ReplayData {
     trace: Array<ITrace>;
     replayPercentage: number;
     isReplayPlaying: boolean;
+    replaySpeed: number;
 
     setTrace: (trace: Array<ITrace>) => void;
     setReplayPercentage: (replayPercentage: number) => void;
     setReplayPlaying: (isReplayPlaying: boolean) => void;
+    setReplaySpeed: (replaySpeed: number) => void;
 }
 
 export const useAnalyzerStore = create<AnalyzerData>((set) => ({
@@ -36,8 +38,10 @@ export const useReplayStore = create<ReplayData>((set) => ({
     trace: [],
     replayPercentage: 0,
     isReplayPlaying: false,
+    replaySpeed: 1,
 
     setTrace: (trace: Array<ITrace>) => set({trace}),
     setReplayPercentage: (replayPercentage: number) => set({replayPercentage}),
     setReplayPlaying: (isReplayPlaying: boolean) => set({isReplayPlaying}),
+    setReplaySpeed: (replaySpeed: number) => set({replaySpeed}),
 }));

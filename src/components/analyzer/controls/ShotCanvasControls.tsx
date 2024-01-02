@@ -1,13 +1,24 @@
 import styles from "./shotcanvascontrols.module.css";
-import {IconPlayerPauseFilled, IconPlayerPlayFilled} from "@tabler/icons-react";
+import {IconDotsVertical, IconPlayerPauseFilled, IconPlayerPlayFilled, IconSettingsFilled} from "@tabler/icons-react";
 import {useReplayStore} from "../../../stores/analyzerstore.ts";
 import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {formatMillisToMinSec, formatMillisToMinSecMillis} from "../../../utills/jsutils.ts";
 import {useCurrentShot} from "../../../hooks/useCurrentShot.ts";
+import DropUp from "../../common/DropUp.tsx";
+
+const REPLAY_SPEEDS = {
+    "0.25x": 0.25,
+    "0.5x": 0.5,
+    "1x": 1,
+    "2x": 2,
+    "4x": 4,
+}
+const REPLAY_SPEEDS_KEYS = Object.keys(REPLAY_SPEEDS);
+const REPLAY_SPEEDS_VALUES = Object.values(REPLAY_SPEEDS);
 
 const ShotCanvasControls = () => {
-    const [replayPercentage, isReplayPlaying, setReplayPlaying, setReplayPercentage] = useReplayStore((state) =>
-        [state.replayPercentage, state.isReplayPlaying, state.setReplayPlaying, state.setReplayPercentage]);
+    const [replayPercentage, isReplayPlaying, replaySpeed, setReplayPlaying, setReplayPercentage, setReplaySpeed] = useReplayStore((state) =>
+        [state.replayPercentage, state.isReplayPlaying, state.replaySpeed, state.setReplayPlaying, state.setReplayPercentage, state.setReplaySpeed]);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [shot, _trace] = useCurrentShot();
@@ -44,7 +55,18 @@ const ShotCanvasControls = () => {
                 <p className={styles.max_time}>{maxTimeFormatted}</p>
             </div>
             <div className={styles.separator} />
-            <div className={styles.media_utils}></div>
+            <div className={styles.media_utils}>
+                <DropUp
+                    options={REPLAY_SPEEDS_KEYS}
+                    selectedOption={REPLAY_SPEEDS_KEYS[REPLAY_SPEEDS_VALUES.indexOf(replaySpeed)]}
+                    setSelectedOption={(value: string) => {
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-expect-error
+                        setReplaySpeed(REPLAY_SPEEDS[value]);
+                    }} />
+                <IconSettingsFilled />
+                <IconDotsVertical />
+            </div>
         </footer>
     )
 }

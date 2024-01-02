@@ -65,3 +65,17 @@
 .progress_handle:hover {
     background-color: rgba(220, 220, 220, 1);
 }
+
+.separator {
+    width: 2px;
+    height: 30px;
+    background-color: var(--clr-background-contrast);
+    margin-right: 1rem;
+}
+
+.media_utils {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+}
