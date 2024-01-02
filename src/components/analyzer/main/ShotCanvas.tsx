@@ -11,8 +11,8 @@ import styles from "./shotcanvas.module.css"
 import {useCurrentShot} from "../../../hooks/useCurrentShot.ts";
 
 const ShotCanvas = () => {
-    const [replayPercentage, isReplayPlaying, setReplayPercentage, setIsReplayPlaying] = useReplayStore((state) => [
-        state.replayPercentage, state.isReplayPlaying, state.setReplayPercentage, state.setReplayPlaying]);
+    const [replayPercentage, isReplayPlaying, replaySpeed, setReplayPercentage, setIsReplayPlaying] = useReplayStore((state) => [
+        state.replayPercentage, state.isReplayPlaying, state.replaySpeed, state.setReplayPercentage, state.setReplayPlaying]);
     const [currentShotIdx] = useAnalyzerStore((state) =>
         [state.currentShotIdx]);
     const [currentShot, trace] = useCurrentShot();
@@ -64,14 +64,20 @@ const ShotCanvas = () => {
                 return;
             }
 
-            // Recalculating the percentage
-            const milliseconds = (frameIdx + 1) * TIME_PER_FRAME;
-            const percentage = milliseconds / currentShot.duration_millis * 100;
-            setReplayPercentage(percentage);
+            // Recalculating the percentage of the next frame with respect to replay speed
+            // replaySpeed of 0.5 means that the replay is 2x slower than normal
+            const nextPercentage = replayPercentage + replaySpeed * 100 / MAX_FRAMES;
+            setReplayPercentage(nextPercentage);
 
-            setFrameIdx((prev) => prev + 1);
+            // Recalculating the frame index with respect to replay speed
+            const nextFrameIdx = Math.floor(nextPercentage / 100 * MAX_FRAMES);
+            setFrameIdx(nextFrameIdx);
         }, TIME_PER_FRAME);
-    }, [MAX_FRAMES, currentShot, frameIdx, isReplayPlaying, setReplayPercentage]);
+
+        return () => {
+            if (interval.current !== null) clearInterval(interval.current);
+        }
+    }, [MAX_FRAMES, currentShot, frameIdx, isReplayPlaying, setReplayPercentage, replaySpeed, setIsReplayPlaying, replayPercentage]);
 
     return (
         <div className={styles.wrapper}>
