@@ -23,8 +23,10 @@ const ShotCanvasControls = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [shot, _trace] = useCurrentShot();
     const maxTimeFormatted = useMemo(() => shot ? formatMillisToMinSec(shot.duration_millis) : null, [shot]);
-    const currentTimeFormatted = useMemo(() =>
-        formatMillisToMinSecMillis(shot ? (shot.duration_millis * replayPercentage / 100) : 0), [replayPercentage, shot]);
+    const currentTimeFormatted = useMemo(() => {
+        if (!shot) return ["00", "00"];
+        return formatMillisToMinSecMillis(shot.duration_millis * replayPercentage / 100);
+    }, [replayPercentage, shot]);
 
     const toggleReplayPlaying = useCallback((value: boolean) => {
         if (value && Math.ceil(replayPercentage) === 100) {
