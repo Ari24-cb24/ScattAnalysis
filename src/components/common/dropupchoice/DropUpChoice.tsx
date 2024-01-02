@@ -2,7 +2,7 @@ import styles from "./dropup.module.css";
 import {useCallback, useEffect, useState} from "react";
 
 
-const DropUp = (props: {
+const DropUpChoice = (props: {
     options: string[];
     selectedOption: string;
     setSelectedOption: (option: string) => void;
@@ -19,7 +19,7 @@ const DropUp = (props: {
     }, [isExpanded]);
 
     useEffect(() => {
-        // document.addEventListener("click", handleClick);
+        document.addEventListener("click", handleClick);
 
         return () => {
             document.removeEventListener("click", handleClick);
@@ -49,4 +49,4 @@ const DropUp = (props: {
     )
 }
 
-export default DropUp;
+export default DropUpChoice;

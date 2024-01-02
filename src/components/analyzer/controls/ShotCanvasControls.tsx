@@ -1,10 +1,17 @@
 import styles from "./shotcanvascontrols.module.css";
-import {IconDotsVertical, IconPlayerPauseFilled, IconPlayerPlayFilled, IconSettingsFilled} from "@tabler/icons-react";
+import {
+    IconCameraFilled,
+    IconDotsVertical, IconFileExport,
+    IconPlayerPauseFilled,
+    IconPlayerPlayFilled,
+    IconSettingsFilled
+} from "@tabler/icons-react";
 import {useReplayStore} from "../../../stores/analyzerstore.ts";
-import {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {formatMillisToMinSec, formatMillisToMinSecMillis} from "../../../utills/jsutils.ts";
 import {useCurrentShot} from "../../../hooks/useCurrentShot.ts";
-import DropUp from "../../common/DropUp.tsx";
+import DropUpChoice from "../../common/dropupchoice/DropUpChoice.tsx";
+import DropUpActions from "../../common/dropupactions/DropUpActions.tsx";
 
 const REPLAY_SPEEDS = {
     "0.25x": 0.25,
@@ -15,6 +22,14 @@ const REPLAY_SPEEDS = {
 }
 const REPLAY_SPEEDS_KEYS = Object.keys(REPLAY_SPEEDS);
 const REPLAY_SPEEDS_VALUES = Object.values(REPLAY_SPEEDS);
+
+const inlineFlexStyle: React.CSSProperties = {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "5px",
+}
 
 const ShotCanvasControls = () => {
     const [replayPercentage, isReplayPlaying, replaySpeed, setReplayPlaying, setReplayPercentage, setReplaySpeed] = useReplayStore((state) =>
@@ -58,7 +73,7 @@ const ShotCanvasControls = () => {
             </div>
             <div className={styles.separator} />
             <div className={styles.media_utils}>
-                <DropUp
+                <DropUpChoice
                     options={REPLAY_SPEEDS_KEYS}
                     selectedOption={REPLAY_SPEEDS_KEYS[REPLAY_SPEEDS_VALUES.indexOf(replaySpeed)]}
                     setSelectedOption={(value: string) => {
@@ -67,7 +82,17 @@ const ShotCanvasControls = () => {
                         setReplaySpeed(REPLAY_SPEEDS[value]);
                     }} />
                 <IconSettingsFilled />
-                <IconDotsVertical />
+                <DropUpActions
+                    options={{
+                        "Take Screenshot": <div style={inlineFlexStyle}><IconCameraFilled /> <p>Take Screenshot</p></div>,
+                        "Export...": <div style={inlineFlexStyle}><IconFileExport /> <p>Export...</p></div>,
+                    }}
+                    setSelectedOption={(value: string) => {
+                        console.log(value);
+                    }}
+                >
+                    <IconDotsVertical />
+                </DropUpActions>
             </div>
         </footer>
     )
