@@ -1,5 +1,6 @@
 import {create} from "zustand";
 import {IScattDocumentMeta, IScattShot, ITrace} from "../types/analyzer/scatt_document_types.ts";
+import {IVelocityList} from "../types/analyzer/velocity_graph.ts";
 
 
 interface AnalyzerData {
@@ -17,11 +18,19 @@ interface ReplayData {
     replayPercentage: number;
     isReplayPlaying: boolean;
     replaySpeed: number;
+    frameIdx: number;
 
     setTrace: (trace: Array<ITrace>) => void;
     setReplayPercentage: (replayPercentage: number) => void;
     setReplayPlaying: (isReplayPlaying: boolean) => void;
     setReplaySpeed: (replaySpeed: number) => void;
+    setFrameIdx: (frameIdx: number) => void;
+}
+
+interface VelocityGraphData {
+    velocityGraph: IVelocityList;
+
+    setVelocityGraph: (velocityGraph: IVelocityList) => void;
 }
 
 export const useAnalyzerStore = create<AnalyzerData>((set) => ({
@@ -39,9 +48,17 @@ export const useReplayStore = create<ReplayData>((set) => ({
     replayPercentage: 0,
     isReplayPlaying: false,
     replaySpeed: 1,
+    frameIdx: 0,
 
     setTrace: (trace: Array<ITrace>) => set({trace}),
     setReplayPercentage: (replayPercentage: number) => set({replayPercentage}),
     setReplayPlaying: (isReplayPlaying: boolean) => set({isReplayPlaying}),
     setReplaySpeed: (replaySpeed: number) => set({replaySpeed}),
+    setFrameIdx: (frameIdx: number) => set({frameIdx}),
+}));
+
+export const useVelocityGraphStore = create<VelocityGraphData>((set) => ({
+    velocityGraph: [],
+
+    setVelocityGraph: (velocityGraph: IVelocityList) => set({velocityGraph}),
 }));

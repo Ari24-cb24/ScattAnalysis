@@ -1,30 +1,26 @@
-# React + TypeScript + Vite
+# Scatt Analysis
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+After having worked on [ScattMP4Export](github.com/Ari24-cb24/ScattMP4Export), I decided to step things a bit up and create a small frontend for Scatt files. 
+This project is by no means finished and development is being resumed as part of loosing interest in the primary project and having close to no time.
 
-Currently, two official plugins are available:
+Recently I got the urge to get back to analysing Scatt files and executables again since I'm working on hardware which should directly integrate into Scatt.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+![Homeview](https://b.catgirlsare.sexy/Q8gxsMdckODe.png)
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+You are greeted with a nice home view but unfortunately, everything is hardcoded at the moment and only the "New Workspace" button works at the moment.
 
-- Configure the top-level `parserOptions` property like this:
+You are then being prompted to select a Scatt pro file and a working directory for exports etc.
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+![Workspace](https://b.catgirlsare.sexy/T8KbdQL2eVUY.png)
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+The workspace itself is divided into multiple windows, which can be dragged and sized around, making it quite modular and flexible.
+
+A list on the left containing all shots and their basic infos as well as a custom media player for the shot is being included. The graph on the right is a work-in-progress and 
+is supposed to show the current velocity at the given video-time.
+
+## What now?
+
+I think I may rework everything from scratch, since the current code is messy and old. I may also switch to Photino + Vue for a better Backend + Frontend combo.
+You may use this project as you want but please give credit where it's due. It's only here for being a resource for others and maybe even myself in the future.

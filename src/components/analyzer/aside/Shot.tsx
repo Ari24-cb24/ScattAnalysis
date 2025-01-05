@@ -2,7 +2,7 @@ import styles from "./shot.module.css"
 import {IScattShot, ITrace} from "../../../types/analyzer/scatt_document_types.ts";
 import {IconBrandSpeedtest, IconClock, IconStarFilled, IconViewfinder} from "@tabler/icons-react";
 import {useEffect, useState} from "react";
-import {useAnalyzerStore, useReplayStore} from "../../../stores/analyzerstore.ts";
+import {useAnalyzerStore, useReplayStore, useVelocityGraphStore} from "../../../stores/analyzerstore.ts";
 
 const Shot = (props: {
     shot: IScattShot,
@@ -13,6 +13,7 @@ const Shot = (props: {
         [state.currentShotIdx, state.setCurrentShotIdx]);
     const [setTrace, setReplayPercentage, setReplayPlaying] = useReplayStore((state) => [
         state.setTrace, state.setReplayPercentage, state.setReplayPlaying]);
+    const [setVelocityGraph] = useVelocityGraphStore((state) => [state.setVelocityGraph]);
 
     useEffect(() => {
         if (currentShotIdx === props.shotIdx) {
@@ -26,13 +27,20 @@ const Shot = (props: {
         setCurrentShotIdx(props.shotIdx);
 
         let trace = localStorage.getItem("shot-trace-" + props.shotIdx);
+        let velocity = localStorage.getItem("shot-velocity-graph-" + props.shotIdx);
 
         if (!trace) {
             throw new Error("No trace found for shot " + props.shotIdx);
         }
 
+        if (!velocity) {
+            throw new Error("No velocity found for shot " + props.shotIdx);
+        }
+
         trace = JSON.parse(trace);
-        
+        velocity = JSON.parse(velocity);
+
+        setVelocityGraph(velocity as unknown as Array<number>);
         setTrace(trace as unknown as Array<ITrace>);
         setReplayPercentage(0);
         setReplayPlaying(false);

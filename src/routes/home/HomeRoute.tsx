@@ -30,6 +30,10 @@ const saveShotToLocalStorage = (shot: any) => {
     const trace = shot.data.trace;
     localStorage.setItem("shot-trace-" + shot.idx, JSON.stringify(trace))
 
+    // velocity graph is mm/frame
+    const velocityGraph = shot.velocities;
+    localStorage.setItem("shot-velocity-graph-" + shot.idx, JSON.stringify(velocityGraph));
+
     let shotData = {...shot.data};
     delete shotData.trace;
 
@@ -121,27 +125,27 @@ const HomeRoute = () => {
                             <div className={styles.recent_grid}>
                                 <div className={styles.recent_element}>
                                     <IconFolderFilled size={60} />
-                                    <p>tinus-shooty-cup</p>
+                                    <p>test-shooty-cup</p>
                                 </div>
                                 <div className={styles.recent_element}>
                                     <IconFolderFilled size={60} />
-                                    <p>tinus-shooty-cup</p>
+                                    <p>test-shooty-cup</p>
                                 </div>
                                 <div className={styles.recent_element}>
                                     <IconFolderFilled size={60} />
-                                    <p>tinus-shooty-cup</p>
+                                    <p>test-shooty-cup</p>
                                 </div>
                                 <div className={styles.recent_element}>
                                     <IconFolderFilled size={60} />
-                                    <p>tinus-shooty-cup</p>
+                                    <p>test-shooty-cup</p>
                                 </div>
                                 <div className={styles.recent_element}>
                                     <IconFolderFilled size={60} />
-                                    <p>tinus-shooty-cup</p>
+                                    <p>test-shooty-cup</p>
                                 </div>
                                 <div className={styles.recent_element}>
                                     <IconFolderFilled size={60} />
-                                    <p>tinus-shooty-cup</p>
+                                    <p>test-shooty-cup</p>
                                 </div>
                                 <div className={styles.separator} />
                                 <div className={styles.separator} />

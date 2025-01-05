@@ -1,6 +1,6 @@
 import {app, BrowserWindow, ipcMain} from "electron";
 import isDev from "electron-is-dev"
-import load_new_workspace_handler from "./new_workspace_handler.js";
+import load_new_workspace_handler from "./handler/new_workspace/new_workspace_handler.js";
 
 function createWindow () {
     // Create the browser window.

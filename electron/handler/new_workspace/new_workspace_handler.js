@@ -1,11 +1,13 @@
 import {ipcMain} from "electron";
 import * as electron from "electron";
-import {convert} from "./converter/converter.js";
+import {convert} from "../../converter/converter.js";
 import fs from "fs"
-import {throwError} from "./utils.js";
+import {throwError} from "../../utils.js";
+import {calculate_velocities} from "./velocities_calculator.js";
 
 
 let data = null;
+let velocities = null;
 let idx = 0;
 
 const create_workspace = (workspace, scatt_file) => {
@@ -41,8 +43,13 @@ const request_file_dialog = (event) => {
     if (workspaces === undefined) return;
     const workspace = workspaces[0];
 
+    // Create the workspace files
     create_workspace(workspace, path);
+    // Convert the scatt file into a json file
     data = convert(workspace, `${workspace}/data.scatt`);
+    // Create the json file containing velocities
+    velocities = calculate_velocities(data.shots);
+    fs.writeFileSync(`${workspace}/velocities.json`, JSON.stringify(velocities));
 
     // meta is data without shots
     const meta = {...data};
@@ -68,6 +75,7 @@ const respond_to_tile_request = (event) => {
     event.reply("new-workspace", {
         type: "tile-response",
         data: data.shots[idx],
+        velocities: velocities[idx],
         idx
     });
     idx += 1;

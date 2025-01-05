@@ -2,12 +2,13 @@ import styles from "./analyzerroute.module.css"
 import Aside from "../../components/analyzer/aside/Aside.tsx";
 import {IScattDocumentMeta, IScattShot} from "../../types/analyzer/scatt_document_types.ts";
 import React, {useEffect, useMemo} from "react";
-import ShotCanvas from "../../components/analyzer/main/ShotCanvas.tsx";
+import ShotCanvas from "../../components/analyzer/shotcanvas/ShotCanvas.tsx";
 import ShotCanvasControls from "../../components/analyzer/controls/ShotCanvasControls.tsx";
 import {useAnalyzerStore} from "../../stores/analyzerstore.ts";
 import {createTilePanes, TileBranchSubstance, TileContainer, TileProvider} from "react-tile-pane";
 import {theme} from "./container-theme/theme.tsx";
-import {IconLayoutSidebar, IconPlayerSkipForwardFilled, IconTarget} from "@tabler/icons-react";
+import {IconBrandSpeedtest, IconLayoutSidebar, IconPlayerSkipForwardFilled, IconTarget} from "@tabler/icons-react";
+import VelocityGraph from "../../components/analyzer/velocity_graph/VelocityGraph.tsx";
 
 const loadMeta = () => {
     const meta: IScattDocumentMeta = JSON.parse(localStorage.getItem("shot-meta")!);
@@ -22,19 +23,22 @@ const loadMeta = () => {
 const [paneList, names] = createTilePanes({
     aside: <Aside />,
     shotReplay: <ShotCanvas />,
-    replayControls: <ShotCanvasControls />
+    replayControls: <ShotCanvasControls />,
+    velocityGraph: <VelocityGraph />,
 });
 
 const icons: Record<keyof typeof names, React.ReactNode> = {
     aside: <IconLayoutSidebar size={16} />,
     shotReplay: <IconTarget size={16} />,
     replayControls: <IconPlayerSkipForwardFilled size={16} />,
+    velocityGraph: <IconBrandSpeedtest size={16} />,
 }
 
 const windowNames: Record<keyof typeof names, string> = {
     aside: "Overview",
     shotReplay: "Shot Replay",
     replayControls: "Replay Controls",
+    velocityGraph: "Velocity Graph",
 }
 
 const rootPane: TileBranchSubstance = {
@@ -57,6 +61,15 @@ const rootPane: TileBranchSubstance = {
             ],
             grow: 3,
         },
+        {
+            children: [
+                {
+                    children: names.velocityGraph,
+                    grow: 1,
+                },
+            ],
+            grow: 1,
+        }
     ],
 }
 

@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, useState} from "react";
+import {useEffect, useMemo, useRef} from "react";
 import {
     drawFrame,
     getMaxFrames,
@@ -11,8 +11,8 @@ import styles from "./shotcanvas.module.css"
 import {useCurrentShot} from "../../../hooks/useCurrentShot.ts";
 
 const ShotCanvas = () => {
-    const [replayPercentage, isReplayPlaying, replaySpeed, setReplayPercentage, setIsReplayPlaying] = useReplayStore((state) => [
-        state.replayPercentage, state.isReplayPlaying, state.replaySpeed, state.setReplayPercentage, state.setReplayPlaying]);
+    const [replayPercentage, isReplayPlaying, replaySpeed, frameIdx, setReplayPercentage, setIsReplayPlaying, setFrameIdx] = useReplayStore((state) => [
+        state.replayPercentage, state.isReplayPlaying, state.replaySpeed, state.frameIdx, state.setReplayPercentage, state.setReplayPlaying, state.setFrameIdx]);
     const [currentShotIdx] = useAnalyzerStore((state) =>
         [state.currentShotIdx]);
     const [currentShot, trace] = useCurrentShot();
@@ -22,7 +22,6 @@ const ShotCanvas = () => {
     const ref = useRef<HTMLCanvasElement>(null);
 
     const oldPercentageRef = useRef<number>(replayPercentage);
-    const [frameIdx, setFrameIdx] = useState(0);
     const MAX_FRAMES = useMemo(() => trace ? getMaxFrames(trace) : -1, [trace]);
 
     // Reset the canvas whenever the current shot changes
@@ -52,6 +51,7 @@ const ShotCanvas = () => {
         redrawAllFrames(ctx.current, currentShot, trace, ref.current.width, ref.current.height, frameIdx, isGoingBackwards);
     }, [replayPercentage, currentShot, MAX_FRAMES, trace]);
 
+    // TODO: Move this into ShotCanvasControls.tsx since this window might be closed
     // Autoplay the replay
     useEffect(() => {
         if (interval.current !== null) clearInterval(interval.current);
